@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+<body >
+    <canvas>
+    </canvas>
+</body>
+<button onclick="up()">Up</button>
+<button onclick="down()">Down</button>
+<button onclick="stop()">stop</button>
+<button onclick="draw()">Restart</button>
+</html>
+<script>
+  move = 0;
+  /*move box*/
+  function stop(){
+    move = 0;
+  }
+  function down(){
+      move = -0.5;
+  }
+  function up(){
+      move = 0.5;
+  }
+  project = {};
+  id = '';
+  function draw(){
+    cancelAnimationFrame(id);
+    startGame();
+  }
+$(function(){
+  startGame();
+});
+  function startGame(){
+
+    /*configure canvas*/
+    var canvas = $('canvas');
+    canvas.css('height','500px');
+    canvas.css('width','500px');
+    canvas.css('background','red');
+
+    /*configure box dimension and pipe width*/
+    var i = 0;
+    var boxX = 0;
+    var boxY = 30;
+    var pipeX = 300;
+    var gap = Math.floor(Math.random() * 20) + 10;
+    var topPipeHeight = Math.floor(Math.random() * 150 - gap);
+    var botPipeHeight = -(150 - gap - topPipeHeight);
+
+
+    project.draw = function(){
+      ctx = canvas[0].getContext('2d');
+
+      /*clear rect and restart frame*/
+      ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
+      ctx.beginPath();
+
+      /*max box y axis*/
+      boxY -= move;
+      // console.log(boxY);
+      if(boxY < 0){
+        boxY = 0;
+      }else if(boxY > 150){
+        boxY = 150;
+      }
+      /*move pipe to the left*/
+      pipeX -= 0.7;
+
+      ctx.rect(boxX,boxY,5,5);
+      ctx.rect(pipeX,0,5,topPipeHeight);
+      ctx.rect(pipeX,150,5,botPipeHeight);
+      ctx.fill();
+
+
+      id = requestAnimationFrame(project.draw);
+        
+      if(Math.round(pipeX) == 0){
+         console.log(Math.round(boxY),topPipeHeight,botPipeHeight);
+        if(Math.round(boxY) < topPipeHeight || Math.round(boxY) > topPipeHeight + gap){
+          cancelAnimationFrame(id);
+          ctx.fillText('Game Over',75,75);
+        }
+        pipeX = 300;
+         gap = Math.floor(Math.random() * 20) + 10;
+         topPipeHeight = Math.floor(Math.random() * 150) - gap;
+         botPipeHeight = -(150 - gap - topPipeHeight);
+
+      }
+    }
+    project.draw();
+  }
+</script>
